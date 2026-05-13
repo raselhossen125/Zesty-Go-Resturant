@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:image_picker/image_picker.dart';
 import '../../../../domain/controller/profile_controller.dart';
 import '../../../const/app_const_assets.dart';
 import '../../../const/app_const_theme.dart';
@@ -29,7 +29,7 @@ class EditProfileScreen extends StatelessWidget {
                         radius: 80,
                         backgroundImage: controller.pickedImage != null
                             ? FileImage(controller.pickedImage!)
-                            : AssetImage(AppConstAssets.restaurant_logo)
+                            : AssetImage(AppConstAssets.burger)
                                   as ImageProvider,
                       ),
                       Positioned(
