@@ -163,12 +163,12 @@ class ViewDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildCategorySection() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.only(left: Dimensions.PADDING_SIZE_DEFAULT),
-      child: GetBuilder<MyMenuController>(
-        builder: (controller) {
-          return Row(
+    return GetBuilder<MyMenuController>(
+      builder: (controller) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: Dimensions.PADDING_SIZE_DEFAULT),
+          child: Row(
             children: controller.categories.asMap().entries.map((entry) {
               int index = entry.key;
               String tag = entry.value;
@@ -176,29 +176,50 @@ class ViewDetailsScreen extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () => controller.setCategoryIndex(index),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  child: Chip(
-                    label: Text(tag),
-                    backgroundColor: isSelected
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
                         ? AppConstColor.primaryColor
                         : Colors.white,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: AppConstColor.primaryColor.withOpacity(
+                                0.3,
+                              ),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : [],
+                    border: Border.all(
+                      color: isSelected
+                          ? AppConstColor.primaryColor
+                          : Colors.grey.shade200,
+                    ),
+                  ),
+                  child: Text(
+                    tag,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey.shade600,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
                     ),
-                    shape: const StadiumBorder(),
-                    side: BorderSide.none,
-                    elevation: isSelected ? 2 : 0,
                   ),
                 ),
               );
             }).toList(),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
