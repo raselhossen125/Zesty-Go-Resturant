@@ -1,35 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zesty_go_resturant/presentation/routes/app_routes.dart';
+// Apnar existing project architecture onujayi import gulo check korun
 import '../../../../domain/controller/profile_controller.dart';
-import '../../../common_widget/custom_app_bar.dart';
 import '../../../const/app_const_assets.dart';
-import '../../../const/app_const_dimensions.dart';
 import '../../../const/app_const_theme.dart';
-import '../../../const/styles.dart';
-import 'edit_profile_screen.dart'; // Apnar edit screen path
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Controller find (DI container e initialize kora thakle)
     final ProfileController controller = Get.find<ProfileController>();
 
     return Scaffold(
-      backgroundColor: AppConstColor.backgroundGray,
-      appBar: const CustomAppBar(
-        title: "Profile",
-        isBackButtonExist: false,
+      backgroundColor: const Color(0xFFF8F8F8), // Light gray background
+      appBar: AppBar(
+        title: const Text(
+          "Profile",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         centerTitle: false,
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Profile Info Card (ZestyGo)
+            // 1. Top Profile Card (Screenshot Matching)
             GetBuilder<ProfileController>(
               builder: (ctrl) {
                 return Container(
@@ -41,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),
                         blurRadius: 10,
-                        offset: const Offset(0, 5),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -49,13 +50,13 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          // Restaurant Logo
+                          // Circle Avatar with Image
                           CircleAvatar(
                             radius: 35,
                             backgroundColor: Colors.grey[200],
                             backgroundImage: ctrl.pickedImage != null
                                 ? FileImage(ctrl.pickedImage!)
-                                : AssetImage(AppConstAssets.burger)
+                                : const AssetImage(AppConstAssets.burger)
                                       as ImageProvider,
                           ),
                           const SizedBox(width: 15),
@@ -64,49 +65,56 @@ class ProfileScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               ctrl.name.value,
-                              style: headline(context)?.copyWith(fontSize: 20),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
 
-                          // Edit Button
-                          SizedBox(
-                            height: 30,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.toNamed(RouteName.EDIT_PROFILE);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(
-                                  0xFFFFE5B4,
-                                ).withOpacity(0.5),
-                                elevation: 0,
-                                shape: const StadiumBorder(),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
+                          // Edit Button (Fixed Layout)
+                          IntrinsicWidth(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: 32,
+                                maxHeight: 32,
                               ),
-                              child: const Text(
-                                "Edit",
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    Get.toNamed(RouteName.EDIT_PROFILE),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(
+                                    0xFFFFE5B4,
+                                  ).withOpacity(0.7),
+                                  foregroundColor: Colors.orange,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
+                                  shape: const StadiumBorder(),
+                                ),
+                                child: const Text(
+                                  "Edit",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 20),
 
-                      // Order Count Box (Blue dotted style)
+                      // Order Count Box (Blue style border)
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.blue.withOpacity(0.3),
-                            width: 1,
+                            color: Theme.of(context).primaryColor,
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -114,13 +122,17 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Text(
                               "${ctrl.orderCount.value}",
-                              style: headline(context)?.copyWith(fontSize: 22),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            Text(
+                            const Text(
                               "Orders",
-                              style: caption(
-                                context,
-                              )?.copyWith(color: Colors.grey),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
@@ -132,35 +144,31 @@ class ProfileScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 25),
-            const Text(
+            Text(
               "Delivery Info",
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 15),
 
-            // 2. Menu Options List
-            _buildProfileMenu(
-              context,
+            // 2. Menu List (Rounded Tiles)
+            _buildMenuItem(
               icon: Icons.assignment_outlined,
               title: "My Orders",
               subtitle: "View past & ongoing orders",
-              onTap: () {
-                // Navigate to My Orders
-              },
             ),
-            _buildProfileMenu(
-              context,
+            _buildMenuItem(
               icon: Icons.help_outline,
               title: "Help & Support",
               subtitle: "Contact us.",
-              onTap: () {},
             ),
-            _buildProfileMenu(
-              context,
+            _buildMenuItem(
               icon: Icons.privacy_tip_outlined,
               title: "Privacy Policy",
               subtitle: "policy details",
-              onTap: () {},
             ),
           ],
         ),
@@ -168,13 +176,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Profile Menu Item Builder
-  Widget _buildProfileMenu(
-    BuildContext context, {
+  // Menu item builder to keep code clean and matching the screenshot
+  Widget _buildMenuItem({
     required IconData icon,
     required String title,
     required String subtitle,
-    required VoidCallback onTap,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -183,7 +189,6 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: ListTile(
-        onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         leading: Container(
           padding: const EdgeInsets.all(8),
@@ -195,14 +200,18 @@ class ProfileScreen extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: bodyMedium(context)?.copyWith(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text(subtitle, style: caption(context)),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
+        ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
-          size: 16,
+          size: 14,
           color: Colors.grey,
         ),
+        onTap: () {},
       ),
     );
   }

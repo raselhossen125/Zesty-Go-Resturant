@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zesty_go_resturant/domain/controller/order_controller.dart';
+import 'package:zesty_go_resturant/domain/controller/profile_controller.dart';
 import 'core/app_localizetion_service.dart';
 import 'data/services/dio/dio_client.dart';
 import 'data/services/dio/logging_interceptor.dart';
@@ -66,4 +67,5 @@ Future<void> init() async {
   Get.lazyPut(() => BottomNavbarController());
   Get.lazyPut(() => MyMenuController());
   Get.lazyPut(() => OrderController());
+  Get.lazyPut(() => ProfileController());
 }
