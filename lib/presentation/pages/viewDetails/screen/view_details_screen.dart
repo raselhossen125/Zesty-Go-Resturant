@@ -12,141 +12,193 @@ class ViewDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Controller find kora hochhe (DI theke)
-    final MenuController menuController = Get.find<MenuController>();
+    // Controller find
+    final MyMenuController menuController = Get.find<MyMenuController>();
 
     return Scaffold(
       backgroundColor: AppConstColor.backgroundGray,
       appBar: const CustomAppBar(title: "View Details"),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+        padding: const EdgeInsets.symmetric(
+          vertical: Dimensions.PADDING_SIZE_DEFAULT,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter Chips (Selectable with GetBuilder)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: GetBuilder<MyMenuController>(
-                builder: (controller) {
-                  return Row(
-                    children: controller.categories.asMap().entries.map((
-                      entry,
-                    ) {
-                      int index = entry.key;
-                      String tag = entry.value;
-                      bool isSelected =
-                          controller.selectedCategoryIndex == index;
+            // Filter Chips (Selectable)
+            _buildCategorySection(),
 
-                      return GestureDetector(
-                        onTap: () => controller.setCategoryIndex(index),
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          child: Chip(
-                            label: Text(tag),
-                            backgroundColor: isSelected
-                                ? AppConstColor.primaryColor
-                                : Colors.white,
-                            labelStyle: TextStyle(
-                              color: isSelected ? Colors.white : Colors.grey,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                            shape: const StadiumBorder(),
-                            side: BorderSide.none,
-                            elevation: isSelected ? 2 : 0,
-                          ),
-                        ),
-                      );
-                    }).toList(),
+            const SizedBox(height: 20),
+
+            // Popular Food Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.PADDING_SIZE_DEFAULT,
+              ),
+              child: Text("Popular Food", style: headline(context)),
+            ),
+            const SizedBox(height: 12),
+
+            // Horizontal Popular Foods
+            SizedBox(
+              height: 220, // Card-er height fix kora hoyeche
+              child: ListView.builder(
+                padding: const EdgeInsets.only(
+                  left: Dimensions.PADDING_SIZE_DEFAULT,
+                ),
+                scrollDirection: Axis.horizontal,
+                itemCount: 5, // Static count or controller list
+                itemBuilder: (context, index) {
+                  return Container(
+                    width:
+                        170, // Card-er width fix kora hoyeche horizontal scroll-er jonno
+                    margin: const EdgeInsets.only(right: 15, bottom: 5, top: 5),
+                    child: _buildFoodCard(context),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 20),
-
-            Text("Popular Food", style: headline(context)),
-            const SizedBox(height: 12),
-            _buildFoodGrid(context, count: 2),
 
             const SizedBox(height: 25),
-            Text("All Foods", style: headline(context)),
+
+            // All Foods Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.PADDING_SIZE_DEFAULT,
+              ),
+              child: Text("All Foods", style: headline(context)),
+            ),
             const SizedBox(height: 12),
-            _buildFoodGrid(context, count: 6),
+
+            // Vertical All Foods Grid
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.PADDING_SIZE_DEFAULT,
+              ),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
+                  childAspectRatio: 0.82,
+                ),
+                itemCount: 6,
+                itemBuilder: (context, index) => _buildFoodCard(context),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFoodGrid(BuildContext context, {required int count}) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
-        childAspectRatio: 0.85,
-      ),
-      itemCount: count,
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(Dimensions.RADIUS_LARGE),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+  // Common Food Card Widget
+  Widget _buildFoodCard(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(Dimensions.RADIUS_LARGE),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    AppConstAssets.burger,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Padding(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Center(
+              child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Image.asset(AppConstAssets.burger, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 8.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Cheeseburger",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: bodyMedium(
+                    context,
+                  )?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Cheeseburger",
-                      style: bodyMedium(
-                        context,
-                      )?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.orange, size: 14),
                         Text(" 4.8", style: caption(context)),
-                        const Spacer(),
-                        Text(
-                          "৳12.50",
-                          style: bodyMedium(context)?.copyWith(
-                            color: AppConstColor.primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ],
+                    ),
+                    Text(
+                      "৳12.50",
+                      style: bodyMedium(context)?.copyWith(
+                        color: AppConstColor.primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategorySection() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.only(left: Dimensions.PADDING_SIZE_DEFAULT),
+      child: GetBuilder<MyMenuController>(
+        builder: (controller) {
+          return Row(
+            children: controller.categories.asMap().entries.map((entry) {
+              int index = entry.key;
+              String tag = entry.value;
+              bool isSelected = controller.selectedCategoryIndex == index;
+
+              return GestureDetector(
+                onTap: () => controller.setCategoryIndex(index),
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  child: Chip(
+                    label: Text(tag),
+                    backgroundColor: isSelected
+                        ? AppConstColor.primaryColor
+                        : Colors.white,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                    shape: const StadiumBorder(),
+                    side: BorderSide.none,
+                    elevation: isSelected ? 2 : 0,
+                  ),
+                ),
+              );
+            }).toList(),
+          );
+        },
+      ),
     );
   }
 }

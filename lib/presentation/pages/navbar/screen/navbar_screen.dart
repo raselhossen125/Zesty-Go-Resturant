@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zesty_go_resturant/presentation/pages/menu/screen/menu_screen.dart';
+import 'package:zesty_go_resturant/presentation/pages/order/screen/order_screen.dart';
 import '../../../../domain/controller/bottom_navbar_controller.dart';
 import '../../../const/app_const_dimensions.dart';
 import '../../../const/app_const_theme.dart';
@@ -17,7 +18,7 @@ class BottomNavBarScreen extends StatelessWidget {
     final List<Widget> _screens = [
       const HomeScreen(),
       const MenuScreen(),
-      const Center(child: Text("Orders Page")),
+      const OrderScreen(),
       const Center(child: Text("Profile Page")),
     ];
 
