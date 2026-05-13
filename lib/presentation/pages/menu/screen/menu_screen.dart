@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
 import '../../../../domain/controller/menu_controller.dart';
 import '../../../common_widget/custom_app_bar.dart';
-import '../../../const/app_const_assets.dart';
 import '../../../const/app_const_dimensions.dart';
 import '../../../const/app_const_theme.dart';
 import '../../../const/styles.dart';
@@ -15,7 +15,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MyMenuController controller = Get.put(MyMenuController());
+    // Controller-e repository inject kora thakle seta use hobe
+    final MyMenuController controller = Get.find<MyMenuController>();
 
     return Scaffold(
       backgroundColor: AppConstColor.backgroundGray,
@@ -35,19 +36,37 @@ class MenuScreen extends StatelessWidget {
 
       body: GetBuilder<MyMenuController>(
         builder: (controller) {
+          // Loading state check
+          if (controller.isLoading.value && controller.categoriesList.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Khali list check
+          if (controller.categoriesList.isEmpty) {
+            return const Center(child: Text("No Categories Found"));
+          }
+
           return ListView.builder(
             padding: const EdgeInsets.symmetric(
               horizontal: Dimensions.PADDING_SIZE_DEFAULT,
               vertical: Dimensions.PADDING_SIZE_SMALL,
             ),
-            itemCount: controller.categories.length,
+            itemCount: controller.categoriesList.length,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
-              String categoryName = controller.categories[index];
-              // Ekhon null pathaleo error hobe na
+              // Firestore DocumentSnapshot theke data neya
+              DocumentSnapshot categoryDoc = controller.categoriesList[index];
+              Map<String, dynamic> data =
+                  categoryDoc.data() as Map<String, dynamic>;
+
+              String categoryName = data['categoryName'] ?? "Unknown";
+              String categoryImageUrl = data['image']?['url'] ?? "";
+
               return _buildCategoryCard(
                 context,
                 categoryName,
+                categoryImageUrl,
+                categoryDoc.id, // Document ID for edit/delete
                 index,
                 controller,
               );
@@ -58,10 +77,11 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  // MenuScreen card builder er logic update:
   Widget _buildCategoryCard(
     BuildContext context,
     String title,
+    String imageUrl,
+    String categoryId,
     int index,
     MyMenuController controller,
   ) {
@@ -86,7 +106,7 @@ class MenuScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Image Section
+            // Image Section - Network Image bebohar kora hoyeche
             Container(
               width: 100,
               height: 100,
@@ -95,15 +115,19 @@ class MenuScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
                 child: Container(
                   color: AppConstColor.primaryColor.withOpacity(0.05),
-                  child: Image.asset(
-                    AppConstAssets.burger, // Apnar image logic ekhane thakbe
-                    fit: BoxFit.cover,
-                    errorBuilder: (c, e, s) => Icon(
-                      Icons.fastfood_rounded,
-                      color: AppConstColor.primaryColor,
-                      size: 30,
-                    ),
-                  ),
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          },
+                          errorBuilder: (c, e, s) => _buildDefaultIcon(),
+                        )
+                      : _buildDefaultIcon(),
                 ),
               ),
             ),
@@ -119,6 +143,8 @@ class MenuScreen extends StatelessWidget {
                     style: headline(
                       context,
                     )?.copyWith(fontSize: 18, fontWeight: FontWeight.w800),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Container(
@@ -149,26 +175,32 @@ class MenuScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               icon: const Icon(Icons.more_vert_rounded, color: Colors.grey),
-              // MenuScreen er PopupMenuButton er onSelected logic:
-              // MenuScreen er PopupMenuButton onSelected logic:
               onSelected: (value) {
                 if (value == 'view') {
                   controller.setCategoryIndex(index);
                   Get.toNamed(RouteName.VIEW_DETAILS);
                 } else if (value == 'edit') {
-                  // Rename/Edit er jonno Bottom Sheet call
-                  showImagePickerBottomSheet(context, title);
+                  // Pass data for editing
+                  // showImagePickerBottomSheet(context, title, categoryId);
                 } else if (value == 'delete') {
-                  // Sundor Delete Dialog call
-                  showMenuDeleteDialog(context, title);
+                  // UI theke direct repository delete call
+                  // showMenuDeleteDialog(context, title, () {
+                  //   controller.removeCategory(categoryId);
+                  // });
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'view', child: Text('View Details')),
-                const PopupMenuItem(value: 'edit', child: Text('Rename')),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Text('Delete', style: TextStyle(color: Colors.red)),
+                _buildPopupItem(
+                  'view',
+                  Icons.visibility_rounded,
+                  'View Details',
+                ),
+                _buildPopupItem('edit', Icons.edit_rounded, 'Rename'),
+                _buildPopupItem(
+                  'delete',
+                  Icons.delete_rounded,
+                  'Delete',
+                  isDelete: true,
                 ),
               ],
             ),
@@ -179,10 +211,9 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  // Default Icon Builder
   Widget _buildDefaultIcon() {
     return Icon(
-      Icons.restaurant_menu_rounded, // Menu-r jonno perfect icon
+      Icons.fastfood_rounded,
       color: AppConstColor.primaryColor,
       size: 30,
     );

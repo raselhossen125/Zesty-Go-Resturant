@@ -169,9 +169,9 @@ class ViewDetailsScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: Dimensions.PADDING_SIZE_DEFAULT),
           child: Row(
-            children: controller.categories.asMap().entries.map((entry) {
+            children: controller.categoriesList.asMap().entries.map((entry) {
               int index = entry.key;
-              String tag = entry.value;
+              String tag = entry.value.id;
               bool isSelected = controller.selectedCategoryIndex == index;
 
               return GestureDetector(

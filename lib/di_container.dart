@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zesty_go_resturant/domain/controller/order_controller.dart';
 import 'package:zesty_go_resturant/domain/controller/profile_controller.dart';
+import 'package:zesty_go_resturant/domain/repository/app_menu_repository.dart';
 import 'core/app_localizetion_service.dart';
 import 'data/services/dio/dio_client.dart';
 import 'data/services/dio/logging_interceptor.dart';
@@ -42,30 +43,12 @@ Future<void> init() async {
 
   Get.lazyPut(() => LocalStorageServices(sharedPreferences: Get.find()));
 
-  /// Product Data Sources
-  // Get.lazyPut(
-  //   () => ProductRemoteDataSource(dioClient: Get.find<DioClient>()),
-  // );
-  // Get.lazyPut(
-  //   () => ProductLocalDataSource(localStorageServices: Get.find()),
-  // );
-
   /// Repositories
-  // Get.lazyPut<ProductRepository>(
-  //   () => ProductRepositoryImpl(
-  //     productRemoteDataSource: Get.find<ProductRemoteDataSource>(),
-  //     productLocalDataSource: Get.find<ProductLocalDataSource>(),
-  //   ),
-  // );
-
-  /// Use Cases
-  // Get.lazyPut<ProductUseCase>(
-  //   () => ProductUseCaseImpl(productRepository: Get.find<ProductRepository>()),
-  // );
+  Get.lazyPut(() => MenuRepository());
 
   /// Controllers
   Get.lazyPut(() => BottomNavbarController());
-  Get.lazyPut(() => MyMenuController());
+  Get.lazyPut(() => MyMenuController(menuRepo: Get.find()));
   Get.lazyPut(() => OrderController());
   Get.lazyPut(() => ProfileController());
 }

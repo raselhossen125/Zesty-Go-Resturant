@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'di_container.dart' as di;
+import 'firebase_options.dart';
 import 'presentation/const/app_const_theme.dart';
 import 'presentation/routes/app_pages.dart';
 import 'presentation/routes/app_routes.dart';
@@ -17,6 +19,11 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await di.init();
+
+  // Firebase Initialize
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }
