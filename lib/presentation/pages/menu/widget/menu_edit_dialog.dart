@@ -151,7 +151,6 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
   );
 }
 
-// Missing function-ti ekhane define kora holo
 Widget _buildOptionCard(
   BuildContext context, {
   required IconData icon,
