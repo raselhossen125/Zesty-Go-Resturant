@@ -12,7 +12,6 @@ class ViewDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Controller find
     final MyMenuController menuController = Get.find<MyMenuController>();
 
     return Scaffold(
