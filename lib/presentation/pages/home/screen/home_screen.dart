@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:zesty_go_resturant/presentation/routes/app_routes.dart';
+import '../../../../domain/controller/bottom_navbar_controller.dart';
 import '../../../common_widget/custom_app_bar.dart';
 import '../../../const/app_const_dimensions.dart';
 import '../../../const/app_const_theme.dart';
@@ -53,22 +56,8 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Performance", style: headline(context)),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    "View All",
-                    style: caption(
-                      context,
-                    )?.copyWith(color: AppConstColor.primaryColor),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            Text("Performance", style: headline(context)),
+            const SizedBox(height: 16),
 
             GridView.count(
               shrinkWrap: true,
@@ -245,14 +234,28 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _actionItem(context, Icons.add_box_rounded, "Add Menu"),
-        _actionItem(context, Icons.list_alt_rounded, "Orders"),
-        _actionItem(context, Icons.campaign_rounded, "Promo"),
-        _actionItem(context, Icons.settings_suggest_rounded, "Settings"),
-      ],
+    return GetBuilder<BottomNavbarController>(
+      builder: (navbarController) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Get.toNamed(RouteName.ADD_MENU);
+              },
+              child: _actionItem(context, Icons.add_box_rounded, "Add Menu"),
+            ),
+            GestureDetector(
+              onTap: () {
+                navbarController.changeIndex(2);
+              },
+              child: _actionItem(context, Icons.list_alt_rounded, "Orders"),
+            ),
+            _actionItem(context, Icons.campaign_rounded, "Promo"),
+            _actionItem(context, Icons.settings_suggest_rounded, "Settings"),
+          ],
+        );
+      },
     );
   }
 
