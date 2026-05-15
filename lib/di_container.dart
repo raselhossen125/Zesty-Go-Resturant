@@ -19,18 +19,15 @@ Future<void> init() async {
 
   await Get.putAsync(() async {
     final service = AppLocalizationService();
-    // This is the crucial line: wait for the files to load!
     await service.loadTranslations();
     return service;
   });
 
-  /// Core
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.lazyPut(() => sharedPreferences);
   Get.lazyPut(() => Dio());
   Get.lazyPut(() => LoggingInterceptor());
 
-  /// Services
 
   Get.lazyPut(
     () => DioClient(
@@ -43,10 +40,8 @@ Future<void> init() async {
 
   Get.lazyPut(() => LocalStorageServices(sharedPreferences: Get.find()));
 
-  /// Repositories
   Get.lazyPut(() => MenuRepository());
 
-  /// Controllers
   Get.lazyPut(() => BottomNavbarController());
   Get.lazyPut(() => MyMenuController(menuRepo: Get.find()));
   Get.lazyPut(() => OrderController());

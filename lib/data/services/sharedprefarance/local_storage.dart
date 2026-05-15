@@ -8,7 +8,6 @@ class LocalStorageServices {
 
   LocalStorageServices({required this.sharedPreferences});
 
-  /// Set user Token
   Future<void> saveUserToken(String token) async {
     try {
       await sharedPreferences.setString(ApiUrls.userToken, token);
@@ -21,19 +20,16 @@ class LocalStorageServices {
     }
   }
 
-  /// Get user token
   getUserToken() {
     SharedPreferences.getInstance();
     return sharedPreferences.getString(ApiUrls.userToken) ?? "";
   }
 
-  /// Remove user token
   Future<bool> removeUserToken() async {
     await SharedPreferences.getInstance();
     return sharedPreferences.remove(ApiUrls.userToken);
   }
 
-  /// Save refresh Token
   Future<void> saveRefreshToken(String token) async {
     try {
       await sharedPreferences.setString(ApiUrls.refreshToken, token);
@@ -46,19 +42,16 @@ class LocalStorageServices {
     }
   }
 
-  /// Get refresh Token
   getRefreshToken() {
     SharedPreferences.getInstance();
     return sharedPreferences.getString(ApiUrls.refreshToken) ?? "";
   }
 
-  /// Remove refresh Token
   Future<bool> removeRefreshToken() async {
     await SharedPreferences.getInstance();
     return sharedPreferences.remove(ApiUrls.refreshToken);
   }
 
-  ///Save Data in SharedPreference
 
   Future<void> saveLocalData({
     required String key,
@@ -123,7 +116,6 @@ class LocalStorageServices {
   }
 
   String getSelectedLanguage() {
-    // return saved language or empty string if not saved
     return sharedPreferences.getString(ApiUrls.selectedLanguage) ?? "";
   }
 }

@@ -24,12 +24,10 @@ class ViewDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter Chips (Selectable)
             _buildCategorySection(),
 
             const SizedBox(height: 20),
 
-            // Popular Food Header
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: Dimensions.PADDING_SIZE_DEFAULT,
@@ -38,19 +36,18 @@ class ViewDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Horizontal Popular Foods
             SizedBox(
-              height: 220, // Card-er height fix kora hoyeche
+              height: 220,
               child: ListView.builder(
                 padding: const EdgeInsets.only(
                   left: Dimensions.PADDING_SIZE_DEFAULT,
                 ),
                 scrollDirection: Axis.horizontal,
-                itemCount: 5, // Static count or controller list
+                itemCount: 5,
                 itemBuilder: (context, index) {
                   return Container(
                     width:
-                        170, // Card-er width fix kora hoyeche horizontal scroll-er jonno
+                        170,
                     margin: const EdgeInsets.only(right: 15, bottom: 5, top: 5),
                     child: _buildFoodCard(context),
                   );
@@ -60,7 +57,6 @@ class ViewDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // All Foods Header
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: Dimensions.PADDING_SIZE_DEFAULT,
@@ -69,7 +65,6 @@ class ViewDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Vertical All Foods Grid
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: Dimensions.PADDING_SIZE_DEFAULT,
@@ -90,10 +85,9 @@ class ViewDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+     );
+   }
 
-  // Common Food Card Widget
   Widget _buildFoodCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(

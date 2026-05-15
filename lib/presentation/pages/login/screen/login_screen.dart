@@ -32,67 +32,63 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 80),
+                 const SizedBox(height: 80),
 
-                // Design-er "Login" Title
-                Text(
-                  'Login',
-                  style: displayBase(context)?.copyWith(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1F2C52), // Blue tone title
-                  ),
-                ),
+                 Text(
+                   'Login',
+                   style: displayBase(context)?.copyWith(
+                     fontSize: 32,
+                     fontWeight: FontWeight.bold,
+                     color: const Color(0xFF1F2C52),
+                   ),
+                 ),
 
-                const SizedBox(height: 50),
+                 const SizedBox(height: 50),
 
-                // Email Field
-                CustomTextField(
-                  header: 'E-mail',
-                  hintText: 'Enter your email',
-                  controller: _emailController,
-                  inputType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                      return 'Email is required';
-                    return null;
-                  },
-                ),
+                 CustomTextField(
+                   header: 'E-mail',
+                   hintText: 'Enter your email',
+                   controller: _emailController,
+                   inputType: TextInputType.emailAddress,
+                   validator: (value) {
+                     if (value == null || value.isEmpty)
+                       return 'Email is required';
+                     return null;
+                   },
+                 ),
 
-                const SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                 const SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
-                // Password Field
-                CustomTextField(
-                  header: 'Password',
-                  hintText: 'Enter your password',
-                  isPassword: true,
-                  controller: _passwordController,
-                  inputAction: TextInputAction.done,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                      return 'Password is required';
-                    return null;
-                  },
-                ),
+                 CustomTextField(
+                   header: 'Password',
+                   hintText: 'Enter your password',
+                   isPassword: true,
+                   controller: _passwordController,
+                   inputAction: TextInputAction.done,
+                   validator: (value) {
+                     if (value == null || value.isEmpty)
+                       return 'Password is required';
+                     return null;
+                   },
+                 ),
 
-                const SizedBox(height: 40),
+                 const SizedBox(height: 40),
 
-                // Login Button (Pill Shape)
-                ElevatedButton(
+                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       Get.offAllNamed(RouteName.BOTTOM_NAV_SCREEN);
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFBB03B), // Primary Yellow
-                    shape: const StadiumBorder(), // Pill shape
-                    minimumSize: const Size(
-                      double.infinity,
-                      Dimensions.BUTTON_DEFAULT_HIGHT,
-                    ),
-                    elevation: 0,
-                  ),
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: const Color(0xFFFBB03B),
+                     shape: const StadiumBorder(),
+                     minimumSize: const Size(
+                       double.infinity,
+                       Dimensions.BUTTON_DEFAULT_HIGHT,
+                     ),
+                     elevation: 0,
+                   ),
                   child: Text('Login', style: buttonTextStyle(context)),
                 ),
               ],

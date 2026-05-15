@@ -11,7 +11,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppConstColor.backgroundGray,
-      // CustomAppBar integrate kora hoyeche
       appBar: CustomAppBar(
         title: "Dashboard",
         isBackButtonExist: false,
@@ -44,7 +43,6 @@ class HomeScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
 
-            // Welcome Section
             Text(
               "Hello, ZestyGo! 👋",
               style: displayBase(
@@ -55,7 +53,6 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // Performance Dashboard Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -73,7 +70,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Statistics Grid (Enhanced with better shadows)
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -119,12 +115,10 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // Modern Quick Action Banner
             _buildModernBanner(context),
 
             const SizedBox(height: 25),
 
-            // New: Quick Shortcuts Section (Extra Beauty)
             Text("Quick Actions", style: headline(context)),
             const SizedBox(height: 12),
             _buildQuickActions(context),

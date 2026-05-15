@@ -5,12 +5,11 @@ class AppConstTheme {
     useMaterial3: true,
     brightness: Brightness.light,
 
-    // Splash effects remove kora hoyeche design clean rakhar jonno
     splashFactory: NoSplash.splashFactory,
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
 
-    fontFamily: 'Roboto', // Design onujayi change korte paren
+    fontFamily: 'Roboto',
 
     scaffoldBackgroundColor: AppConstColor.backgroundGray,
     cardColor: AppConstColor.backgroundWhite,
@@ -39,7 +38,6 @@ class AppConstTheme {
       ),
     ),
 
-    // Button Theme design-er yellow button gulor moto
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppConstColor.primaryColor,
@@ -88,21 +86,17 @@ class AppConstTheme {
 }
 
 class AppConstColor {
-  // Image onujayi Yellow/Orange tone
-  static const Color primaryColor = Color(0xFFFBB03B); // Mustard/Amber Yellow
+  static const Color primaryColor = Color(0xFFFBB03B);
   static const Color accentColor = Color(0xFFFDC959);
 
-  // Backgrounds
   static const Color backgroundWhite = Color(0xFFFFFFFF);
   static const Color backgroundGray = Color(
     0xFFF8F8F8,
-  ); // Screen-er light gray background
+  );
 
-  // Text Colors
   static const Color textBlackColor = Color(0xFF1A1A1A);
   static const Color textGrey = Color(0xFF757575);
 
-  // Status Colors (Jodi proyojon hoy)
   static const Color successGreen = Color(0xFF4CAF50);
   static const Color errorRed = Color(0xFFE53935);
 }

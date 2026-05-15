@@ -19,7 +19,6 @@ void main() async {
 
   await di.init();
 
-  // Firebase Initialize
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -27,7 +26,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-/// App Widget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

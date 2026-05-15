@@ -5,7 +5,6 @@ class MenuRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String restaurantId = 'C8ESI8GgEOLG2jMYcuET';
 
-  // 1. Fetch Categories (Read)
   Future<ApiResponse> getCategories() async {
     try {
       final querySnapshot = await _firestore
@@ -19,7 +18,6 @@ class MenuRepository {
     }
   }
 
-  // 2. Add Category (Create)
   Future<ApiResponse> addCategory(Map<String, dynamic> categoryData) async {
     try {
       await _firestore
@@ -33,7 +31,6 @@ class MenuRepository {
     }
   }
 
-  // 3. Update Category (Update)
   Future<ApiResponse> updateCategory(
     String categoryId,
     Map<String, dynamic> categoryData,
@@ -51,7 +48,6 @@ class MenuRepository {
     }
   }
 
-  // 4. Delete Category (Delete)
   Future<ApiResponse> deleteCategory(String categoryId) async {
     try {
       await _firestore

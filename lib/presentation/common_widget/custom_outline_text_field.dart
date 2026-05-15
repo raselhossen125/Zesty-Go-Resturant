@@ -95,43 +95,41 @@ class _CustomOutlineTextFieldState extends State<CustomOutlineTextField> {
             filled: true,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 14,
-            ),
+               vertical: 14,
+             ),
 
-            // ✅ Left-aligned currency symbol, always visible
-            prefixIcon: widget.prefixText != null
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 6),
-                    child: Text(
-                      widget.prefixText!,
-                      style: bodyMedium(context)!.copyWith(
-                        color: Colors.black87,
-                        fontSize: Dimensions.FONT_SIZE_DEFAULT,
-                      ),
-                    ),
-                  )
-                : null,
+             prefixIcon: widget.prefixText != null
+                 ? Padding(
+                     padding: const EdgeInsets.only(left: 12, right: 6),
+                     child: Text(
+                       widget.prefixText!,
+                       style: bodyMedium(context)!.copyWith(
+                         color: Colors.black87,
+                         fontSize: Dimensions.FONT_SIZE_DEFAULT,
+                       ),
+                     ),
+                   )
+                 : null,
 
-            prefixIconConstraints: const BoxConstraints(
-              minWidth: 0,
-              minHeight: 0,
-            ),
+             prefixIconConstraints: const BoxConstraints(
+               minWidth: 0,
+               minHeight: 0,
+             ),
 
-            // Suffix Icon (Password toggle)
-            suffixIcon: widget.isPassword
-                ? GestureDetector(
-                    onTap: () => setState(() => _obscureText = !_obscureText),
-                    child: Icon(
-                      _obscureText
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: const Color(0xFF1F2C52),
-                      size: 20,
-                    ),
-                  )
-                : null,
+             suffixIcon: widget.isPassword
+                 ? GestureDetector(
+                     onTap: () => setState(() => _obscureText = !_obscureText),
+                     child: Icon(
+                       _obscureText
+                           ? Icons.visibility_off_outlined
+                           : Icons.visibility_outlined,
+                       color: const Color(0xFF1F2C52),
+                       size: 20,
+                     ),
+                   )
+                 : null,
 
-            border: OutlineInputBorder(
+             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
               borderSide: BorderSide(
                 color: Theme.of(context).disabledColor.withOpacity(0.7),

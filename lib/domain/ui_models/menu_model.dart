@@ -21,7 +21,6 @@ class FoodModel {
     this.createdAt,
   });
 
-  // Firestore DocumentSnapshot theke Model-e convert korar factory method
   factory FoodModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
@@ -30,7 +29,6 @@ class FoodModel {
       foodName: data['foodName'] ?? '',
       foodImage: data['foodImage'] ?? '',
       description: data['description'] ?? '',
-      // Price ebong Rating number type holeo safe conversion
       price: (data['price'] ?? 0.0).toDouble(),
       rating: (data['rating'] ?? 0.0).toDouble(),
       isPopular: data['isPopular'] ?? false,
@@ -38,7 +36,6 @@ class FoodModel {
     );
   }
 
-  // Model theke Map-e convert kora (Data save korar somoy lagbe)
   Map<String, dynamic> toMap() {
     return {
       'foodName': foodName,

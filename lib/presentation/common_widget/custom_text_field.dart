@@ -52,7 +52,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               text: widget.header,
               style: bodyMedium(context)!.copyWith(
                 color: widget.headerColor ?? const Color(0xFF1F2C52),
-                fontWeight: FontWeight.w500, // Design-e medium bold mone hochhe
+                fontWeight: FontWeight.w500,
                 fontSize: Dimensions.FONT_SIZE_DEFAULT,
               ),
               children: [
@@ -87,13 +87,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
             )?.copyWith(color: Colors.grey.withOpacity(0.6)),
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.PADDING_SIZE_DEFAULT,
-              vertical: 14, // Vertical padding image-er moto setup
-            ),
+             contentPadding: const EdgeInsets.symmetric(
+               horizontal: Dimensions.PADDING_SIZE_DEFAULT,
+               vertical: 14,
+             ),
 
-            // Design onujayi Outline Border
-            border: OutlineInputBorder(
+             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Dimensions.RADIUS_DEFAULT),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),

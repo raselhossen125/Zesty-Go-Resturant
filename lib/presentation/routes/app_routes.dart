@@ -3,9 +3,9 @@ abstract class RouteName {
 
   static const String _SPLASH_SCREEN = "/splash";
   static const String _LOGIN_SCREEN = "/login";
-  static const String _BOTTOM_NAV_SCREEN = "/bottom_nav"; // Updated name
+  static const String _BOTTOM_NAV_SCREEN = "/bottom_nav";
   static const String _VIEW_DETAILS =
-      "/view_details"; // Added for better navigation
+      "/view_details";
   static const String _ADD_MENU = "/add_menu";
   static const String _EDIT_PROFILE = "/edit_profile";
 

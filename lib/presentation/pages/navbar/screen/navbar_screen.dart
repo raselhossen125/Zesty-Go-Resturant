@@ -13,7 +13,6 @@ class BottomNavBarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Controller-ti find kora hochhe (DI container theke)
     final BottomNavbarController navCont = Get.find<BottomNavbarController>();
 
     final List<Widget> _screens = [
