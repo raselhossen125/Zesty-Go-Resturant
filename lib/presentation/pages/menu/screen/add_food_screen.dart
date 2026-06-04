@@ -7,18 +7,28 @@ import '../../../const/app_const_dimensions.dart';
 import '../../../const/app_const_theme.dart';
 import '../../../const/styles.dart';
 
-class AddMenuScreen extends StatefulWidget {
-  const AddMenuScreen({super.key});
+class AddFoodScreen extends StatefulWidget {
+  final String categoryId;
+  final String categoryName;
+
+  const AddFoodScreen({
+    super.key,
+    required this.categoryId,
+    required this.categoryName,
+  });
 
   @override
-  State<AddMenuScreen> createState() => _AddMenuScreenState();
+  State<AddFoodScreen> createState() => _AddFoodScreenState();
 }
 
-class _AddMenuScreenState extends State<AddMenuScreen> {
+class _AddFoodScreenState extends State<AddFoodScreen> {
   // Controllers
   final TextEditingController nameController = TextEditingController();
-
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController descController = TextEditingController();
   final TextEditingController imageUrlController = TextEditingController();
+
+  bool isPopularItem = false;
 
   @override
   void initState() {
@@ -32,18 +42,22 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
 
   @override
   void dispose() {
-    nameController.dispose();
     imageUrlController.dispose();
+    nameController.dispose();
+    priceController.dispose();
+    descController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final MyMenuController controller = Get.find<MyMenuController>();
+
     return Scaffold(
       backgroundColor: AppConstColor.backgroundGray,
-      appBar: const CustomAppBar(title: "Add Menu"),
+      appBar: CustomAppBar(title: "Add Food to ${widget.categoryName}"),
       body: GetBuilder<MyMenuController>(
-        builder: (menuController) {
+        builder: (foodController) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
             child: Column(
@@ -51,7 +65,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
               children: [
                 // Image preview
                 Text(
-                  "Menu Image Preview",
+                  "Food Image Preview",
                   style: bodyMedium(
                     context,
                   )?.copyWith(fontWeight: FontWeight.bold),
@@ -60,7 +74,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                 const SizedBox(height: 8),
 
                 Container(
-                  height: 220,
+                  height: 160,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -78,14 +92,14 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                               children: [
                                 const Icon(
                                   Icons.broken_image_outlined,
-                                  size: 50,
+                                  size: 45,
                                   color: Colors.redAccent,
                                 ),
 
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 8),
 
                                 Text(
-                                  "Invalid Menu Image URL!",
+                                  "Invalid Image URL Connection!",
                                   style: TextStyle(color: Colors.red[400]),
                                 ),
                               ],
@@ -96,56 +110,129 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                             children: [
                               Icon(
                                 Icons.image_search_rounded,
-                                size: 50,
-                                color: Colors.grey.shade400,
+                                size: 45,
+                                color: Colors.grey[400],
                               ),
 
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 8),
 
                               Text(
                                 "Enter URL below to see preview",
-                                style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: TextStyle(color: Colors.grey[500]),
                               ),
                             ],
                           ),
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
 
-                // Menu name
+                // Food name
                 CustomTextField(
-                  header: "Menu Name ",
-                  hintText: "Enter your menu name (e.g., Burgers)",
+                  header: "Food Name *",
+                  hintText: "e.g., Crispy Chicken Fry",
                   controller: nameController,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Price
+                CustomTextField(
+                  header: "Price (৳) *",
+                  hintText: "e.g., 450",
+                  controller: priceController,
+                  inputType: TextInputType.number,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Image url
                 CustomTextField(
-                  header: "Menu Image URL ",
-                  hintText: "https://example.com/menu-image.jpg",
+                  header: "Food Image URL *",
+                  hintText: "https://example.com/image.jpg",
                   controller: imageUrlController,
                   inputType: TextInputType.url,
                 ),
 
-                const SizedBox(height: 50),
+                const SizedBox(height: 16),
+
+                // Description
+                CustomTextField(
+                  header: "Description *",
+                  hintText: "Enter food descriptions...",
+                  controller: descController,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Popular switch
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Mark as Popular",
+                            style: bodyMedium(
+                              context,
+                            )?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+
+                          Text(
+                            "It will feature on popular list",
+                            style: caption(context),
+                          ),
+                        ],
+                      ),
+
+                      Switch.adaptive(
+                        activeColor: AppConstColor.primaryColor,
+                        value: isPopularItem,
+                        onChanged: (val) {
+                          setState(() {
+                            isPopularItem = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 40),
 
                 // Save button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: menuController.isLoading.value
+                    onPressed: foodController.isLoading.value
                         ? null
                         : () {
                             if (nameController.text.trim().isEmpty) {
                               Get.snackbar(
                                 "Required Field",
-                                "Please enter a menu name",
+                                "Food Name cannot be empty",
+                                backgroundColor: Colors.amber,
+                                colorText: Colors.black,
+                              );
+
+                              return;
+                            }
+
+                            if (priceController.text.trim().isEmpty) {
+                              Get.snackbar(
+                                "Required Field",
+                                "Price field is mandatory",
                                 backgroundColor: Colors.amber,
                                 colorText: Colors.black,
                               );
@@ -156,7 +243,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                             if (imageUrlController.text.trim().isEmpty) {
                               Get.snackbar(
                                 "Required Field",
-                                "Please paste or enter a valid Menu Image URL",
+                                "Please paste or enter a valid Image URL Link",
                                 backgroundColor: Colors.amber,
                                 colorText: Colors.black,
                               );
@@ -164,10 +251,25 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                               return;
                             }
 
-                            // Create menu
-                            menuController.createCategory(
-                              nameController.text.trim(),
-                              imageUrlController.text.trim(),
+                            if (descController.text.trim().isEmpty) {
+                              Get.snackbar(
+                                "Required Field",
+                                "Please write a short description",
+                                backgroundColor: Colors.amber,
+                                colorText: Colors.black,
+                              );
+
+                              return;
+                            }
+
+                            // Create food item
+                            foodController.createFoodItem(
+                              categoryId: widget.categoryId,
+                              name: nameController.text,
+                              price: priceController.text,
+                              description: descController.text,
+                              isPopular: isPopularItem,
+                              finalImageUrl: imageUrlController.text.trim(),
                             );
                           },
                     style: ElevatedButton.styleFrom(
@@ -175,7 +277,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                       shape: const StadiumBorder(),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    child: menuController.isLoading.value
+                    child: foodController.isLoading.value
                         ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -185,7 +287,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                             ),
                           )
                         : const Text(
-                            "Save Menu",
+                            "Add Food Item",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

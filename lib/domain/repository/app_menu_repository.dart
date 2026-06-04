@@ -7,25 +7,27 @@ class MenuRepository {
 
   Future<ApiResponse> getCategories() async {
     try {
-      final querySnapshot = await _firestore
+      final snapshot = await _firestore
           .collection('restaurants')
           .doc(restaurantId)
           .collection('categories')
           .get();
-      return ApiResponse.withSuccess(querySnapshot);
+
+      return ApiResponse.withSuccess(snapshot);
     } catch (e) {
       return ApiResponse.withError(e.toString());
     }
   }
 
-  Future<ApiResponse> addCategory(Map<String, dynamic> categoryData) async {
+  Future<ApiResponse> addCategory(Map<String, dynamic> data) async {
     try {
       await _firestore
           .collection('restaurants')
           .doc(restaurantId)
           .collection('categories')
-          .add(categoryData);
-      return ApiResponse.withSuccess("Category Added");
+          .add(data);
+
+      return ApiResponse.withSuccess("Category added");
     } catch (e) {
       return ApiResponse.withError(e.toString());
     }
@@ -33,7 +35,7 @@ class MenuRepository {
 
   Future<ApiResponse> updateCategory(
     String categoryId,
-    Map<String, dynamic> categoryData,
+    Map<String, dynamic> data,
   ) async {
     try {
       await _firestore
@@ -41,8 +43,9 @@ class MenuRepository {
           .doc(restaurantId)
           .collection('categories')
           .doc(categoryId)
-          .update(categoryData);
-      return ApiResponse.withSuccess("Category Updated");
+          .update(data);
+
+      return ApiResponse.withSuccess("Category updated");
     } catch (e) {
       return ApiResponse.withError(e.toString());
     }
@@ -56,7 +59,65 @@ class MenuRepository {
           .collection('categories')
           .doc(categoryId)
           .delete();
-      return ApiResponse.withSuccess("Category Deleted");
+
+      return ApiResponse.withSuccess("Category deleted");
+    } catch (e) {
+      return ApiResponse.withError(e.toString());
+    }
+  }
+
+  Future<ApiResponse> addFoodItem(
+    String categoryId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await _firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .collection('categories')
+          .doc(categoryId)
+          .collection('foods')
+          .add(data);
+
+      return ApiResponse.withSuccess("Food item added");
+    } catch (e) {
+      return ApiResponse.withError(e.toString());
+    }
+  }
+
+  Future<ApiResponse> updateFoodItem(
+    String categoryId,
+    String foodId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await _firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .collection('categories')
+          .doc(categoryId)
+          .collection('foods')
+          .doc(foodId)
+          .update(data);
+
+      return ApiResponse.withSuccess("Food item updated");
+    } catch (e) {
+      return ApiResponse.withError(e.toString());
+    }
+  }
+
+  Future<ApiResponse> deleteFoodItem(String categoryId, String foodId) async {
+    try {
+      await _firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .collection('categories')
+          .doc(categoryId)
+          .collection('foods')
+          .doc(foodId)
+          .delete();
+
+      return ApiResponse.withSuccess("Food item deleted");
     } catch (e) {
       return ApiResponse.withError(e.toString());
     }

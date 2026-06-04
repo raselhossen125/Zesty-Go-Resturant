@@ -20,6 +20,7 @@ void showMenuDeleteDialog(
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Icon
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -32,15 +33,24 @@ void showMenuDeleteDialog(
                     size: 40,
                   ),
                 ),
+
                 const SizedBox(height: 20),
+
+                // Title
                 Text("Delete Menu?", style: headline(context)),
+
                 const SizedBox(height: 12),
+
+                // Description
                 Text(
                   "Are you sure you want to delete '$title'? This action will remove all items under this category.",
                   textAlign: TextAlign.center,
                   style: bodyMedium(context)?.copyWith(color: Colors.grey[600]),
                 ),
+
                 const SizedBox(height: 24),
+
+                // Buttons
                 Row(
                   children: [
                     Expanded(
@@ -61,7 +71,9 @@ void showMenuDeleteDialog(
                         ),
                       ),
                     ),
+
                     const SizedBox(width: 12),
+
                     Expanded(
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value

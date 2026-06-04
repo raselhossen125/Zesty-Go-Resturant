@@ -8,7 +8,7 @@ import '../../../const/app_const_theme.dart';
 import '../../../const/styles.dart';
 import '../../../routes/app_routes.dart';
 import '../widget/menu_delete_dialog.dart';
-import '../widget/menu_edit_dialog.dart'; // Sheet location clear path dynamically matched
+import '../widget/menu_edit_dialog.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -35,13 +35,13 @@ class MenuScreen extends StatelessWidget {
 
       body: GetBuilder<MyMenuController>(
         builder: (menuController) {
-          // Loading state check
+          // Loading state
           if (menuController.isLoading.value &&
               menuController.categoriesList.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Khali list check
+          // Empty state
           if (menuController.categoriesList.isEmpty) {
             return const Center(child: Text("No Categories Found"));
           }
@@ -56,10 +56,12 @@ class MenuScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               DocumentSnapshot categoryDoc =
                   menuController.categoriesList[index];
+
               Map<String, dynamic> data =
                   categoryDoc.data() as Map<String, dynamic>;
 
               String categoryName = data['categoryName'] ?? "Unknown";
+
               String categoryImageUrl = data['image']?['url'] ?? "";
 
               return _buildCategoryCard(
@@ -106,7 +108,7 @@ class MenuScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Image Section
+            // Image
             Container(
               width: 100,
               height: 100,
@@ -120,7 +122,9 @@ class MenuScreen extends StatelessWidget {
                           imageUrl,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, progress) {
-                            if (progress == null) return child;
+                            if (progress == null) {
+                              return child;
+                            }
                             return const Center(
                               child: CircularProgressIndicator(strokeWidth: 2),
                             );
@@ -132,7 +136,7 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
 
-            // Info Section
+            // Info
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +150,9 @@ class MenuScreen extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+
                   const SizedBox(height: 4),
+
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -169,7 +175,7 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
 
-            // Action Button - PopupMenu System Fixed
+            // Actions
             PopupMenuButton<String>(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -180,10 +186,8 @@ class MenuScreen extends StatelessWidget {
                   controller.setCategoryIndex(index);
                   Get.toNamed(RouteName.VIEW_DETAILS);
                 } else if (value == 'edit') {
-                  // Comment output sorano holo ebong dynamic validation order sequence path map kora holo
                   showImagePickerBottomSheet(context, categoryId, title);
                 } else if (value == 'delete') {
-                  // Controller core execution model direct bind dynamic handler injection
                   showMenuDeleteDialog(context, categoryId, title);
                 }
               },
@@ -202,6 +206,7 @@ class MenuScreen extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(width: 8),
           ],
         ),

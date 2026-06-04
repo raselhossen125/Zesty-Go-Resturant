@@ -9,14 +9,11 @@ class MyMenuController extends GetxController {
   final MenuRepository menuRepo;
   MyMenuController({required this.menuRepo});
 
-  // Categories Data
   var categoriesList = <DocumentSnapshot>[].obs;
   var isLoading = false.obs;
 
-  // Selection logic
   int selectedCategoryIndex = 0;
 
-  // Image Picker state
   File? pickedImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -26,13 +23,11 @@ class MyMenuController extends GetxController {
     fetchCategories();
   }
 
-  // --- 1. Selection & Index Logic ---
   void setCategoryIndex(int index) {
     selectedCategoryIndex = index;
     update();
   }
 
-  // --- 2. Image Picker Logic ---
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(source: source);
     if (image != null) {
@@ -46,19 +41,18 @@ class MyMenuController extends GetxController {
     update();
   }
 
-  // --- 3. Fetch/Read Categories ---
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
       update();
 
-      ApiResponse response = await menuRepo.getCategories();
+      final response = await menuRepo.getCategories();
 
       if (response.response != null && response.response is QuerySnapshot) {
         final snapshot = response.response as QuerySnapshot;
         categoriesList.assignAll(snapshot.docs);
       } else {
-        Get.snackbar("Fetch Error", response.error.toString());
+        Get.snackbar("Error", response.error.toString());
       }
     } catch (e) {
       Get.snackbar("Error", "Something went wrong: $e");
@@ -68,41 +62,35 @@ class MyMenuController extends GetxController {
     }
   }
 
-  // --- 4. Add Category ---
   Future<void> createCategory(String name, String imageUrl) async {
-    if (name.trim().isEmpty) {
-      Get.snackbar("Warning", "Please enter menu name");
+    if (name.trim().isEmpty || imageUrl.trim().isEmpty) {
+      Get.snackbar("Warning", "All fields are required");
       return;
     }
 
     isLoading.value = true;
     update();
 
-    final categoryData = {
+    final data = {
       'categoryName': name.trim(),
-      'image': {
-        'url': imageUrl.trim().isEmpty
-            ? "https://placeholder.com/image.png"
-            : imageUrl,
-        'type': 'url',
-      },
+      'image': {'url': imageUrl.trim(), 'type': 'url'},
       'createdAt': FieldValue.serverTimestamp(),
     };
 
-    ApiResponse response = await menuRepo.addCategory(categoryData);
+    final response = await menuRepo.addCategory(data);
+
     if (response.response != null) {
       await fetchCategories();
-      clearPickedImage();
       Get.back();
       Get.snackbar("Success", "Category created successfully!");
     } else {
       Get.snackbar("Error", response.error.toString());
     }
+
     isLoading.value = false;
     update();
   }
 
-  // --- 5. Update Category ---
   Future<void> editCategory(
     String categoryId,
     String newName,
@@ -116,17 +104,15 @@ class MyMenuController extends GetxController {
     isLoading.value = true;
     update();
 
-    final categoryData = {
+    final data = {
       'categoryName': newName.trim(),
       'image.url': newImageUrl.trim().isEmpty
-          ? "https://placeholder.com/image.png"
-          : newImageUrl,
+          ? "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+          : newImageUrl.trim(),
     };
 
-    ApiResponse response = await menuRepo.updateCategory(
-      categoryId,
-      categoryData,
-    );
+    final response = await menuRepo.updateCategory(categoryId, data);
+
     if (response.response != null) {
       await fetchCategories();
       clearPickedImage();
@@ -135,23 +121,109 @@ class MyMenuController extends GetxController {
     } else {
       Get.snackbar("Error", response.error.toString());
     }
+
     isLoading.value = false;
     update();
   }
 
-  // --- 6. Delete Category ---
   Future<void> removeCategory(String categoryId) async {
     isLoading.value = true;
     update();
 
-    ApiResponse response = await menuRepo.deleteCategory(categoryId);
+    final response = await menuRepo.deleteCategory(categoryId);
+
     if (response.response != null) {
       await fetchCategories();
-      Get.back(); // Close confirmation dialog
-      Get.snackbar("Deleted", "Category removed successfully");
+      Get.back();
+      Get.snackbar("Deleted", "Category removed");
     } else {
       Get.snackbar("Error", response.error.toString());
     }
+
+    isLoading.value = false;
+    update();
+  }
+
+  Future<void> createFoodItem({
+    required String categoryId,
+    required String name,
+    required String price,
+    required String description,
+    required bool isPopular,
+    required String finalImageUrl,
+  }) async {
+    isLoading.value = true;
+    update();
+
+    final data = {
+      'foodName': name.trim(),
+      'price': price.trim(),
+      'description': description.trim(),
+      'isPopular': isPopular,
+      'ratting': 0.0,
+      'foodImage': finalImageUrl.trim(),
+    };
+
+    final response = await menuRepo.addFoodItem(categoryId, data);
+
+    if (response.response != null) {
+      Get.back();
+      Get.snackbar("Success", "$name created successfully!");
+    } else {
+      Get.snackbar("Error", response.error.toString());
+    }
+
+    isLoading.value = false;
+    update();
+  }
+
+  Future<void> editFoodItem({
+    required String categoryId,
+    required String foodId,
+    required String name,
+    required String price,
+    required String description,
+    required String finalImageUrl,
+    required bool isPopular,
+  }) async {
+    isLoading.value = true;
+    update();
+
+    final data = {
+      'foodName': name.trim(),
+      'price': price.trim(),
+      'description': description.trim(),
+      'isPopular': isPopular,
+      'foodImage': finalImageUrl.trim(),
+    };
+
+    final response = await menuRepo.updateFoodItem(categoryId, foodId, data);
+
+    if (response.response != null) {
+      Get.snackbar("Success", "$name updated successfully!");
+    } else {
+      Get.snackbar("Error", response.error.toString());
+    }
+
+    isLoading.value = false;
+    update();
+  }
+
+  Future<void> deleteFoodItem({
+    required String categoryId,
+    required String foodId,
+  }) async {
+    isLoading.value = true;
+    update();
+
+    final response = await menuRepo.deleteFoodItem(categoryId, foodId);
+
+    if (response.response != null) {
+      Get.snackbar("Deleted", "Food item removed");
+    } else {
+      Get.snackbar("Error", response.error.toString());
+    }
+
     isLoading.value = false;
     update();
   }

@@ -31,6 +31,7 @@ class BottomNavBarScreen extends StatelessWidget {
           );
         },
       ),
+
       bottomNavigationBar: _buildBottomNav(navCont),
     );
   }

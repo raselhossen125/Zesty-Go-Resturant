@@ -19,9 +19,7 @@ void main() async {
 
   await di.init();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -42,6 +40,7 @@ class MyApp extends StatelessWidget {
         title: "app_name_key".tr,
         theme: AppConstTheme.defaultTheme,
         initialRoute: RouteName.SPLASH_SCREEN,
+        // initialRoute: RouteName.BOTTOM_NAV_SCREEN,
         routes: RoutePages.pageBuilder,
         routingCallback: (route) {
           debugPrint("======>${route!.current}");

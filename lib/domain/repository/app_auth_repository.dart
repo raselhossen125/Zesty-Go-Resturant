@@ -1,21 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/services/dio/base/api_response.dart';
 
-abstract class AppAuthRepository {
-  Future<ApiResponse> signIn({required Map<String, dynamic> request});
+class AuthRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String restaurantId = 'C8ESI8GgEOLG2jMYcuET';
 
-  Future<bool> checkUserLoggedIn();
+  Future<ApiResponse> validateCredentials(
+    String inputEmail,
+    String inputPassword,
+  ) async {
+    try {
+      final doc = await _firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .get();
 
-  Future<void> saveUserToken(String tokenData);
+      if (!doc.exists || doc.data() == null) {
+        return ApiResponse.withError("Restaurant account not found.");
+      }
 
-  Future<bool> removeUserToken();
+      final data = doc.data() as Map<String, dynamic>;
 
-  Future<ApiResponse> forgotPassword({required Map<String, dynamic> request});
-  Future<ApiResponse> resendOtp({required Map<String, dynamic> request});
-  Future<ApiResponse> verifyOtp({required Map<String, dynamic> request});
-  Future<ApiResponse> resetPassword({required Map<String, dynamic> request});
+      final dbEmail = (data['authEmail'] ?? '').toString().trim();
+      final dbPassword = (data['authPassword'] ?? '').toString();
 
-  Future<ApiResponse> updateFcmToken({
-    required Map<String, dynamic> request,
-  });
-  Future<ApiResponse> resetFcmToken();
+      if (dbEmail == inputEmail.trim() && dbPassword == inputPassword) {
+        return ApiResponse.withSuccess(true);
+      } else {
+        return ApiResponse.withError("Invalid email or password.");
+      }
+    } catch (e) {
+      return ApiResponse.withError(e.toString());
+    }
+  }
 }

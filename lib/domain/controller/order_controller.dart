@@ -1,106 +1,109 @@
+import 'dart:async';
 import 'package:get/get.dart';
+import '../repository/order_repository.dart';
+import '../ui_models/order_model.dart';
 
-// 1. Order Item Model
-class OrderItem {
-  final String name;
-  final double price;
-  final int quantity;
-  final String image;
-
-  OrderItem({
-    required this.name,
-    required this.price,
-    required this.quantity,
-    required this.image,
-  });
-}
-
-// 2. Order Card/Model
-class OrderModel {
-  final String orderId;
-  final List<OrderItem> items;
-  final String deliveryLocation;
-  String status;
-
-  OrderModel({
-    required this.orderId,
-    required this.items,
-    required this.deliveryLocation,
-    this.status = "Cooking",
-  });
-
-  int get totalItemCount => items.fold(0, (sum, item) => sum + item.quantity);
-  double get totalAmount =>
-      items.fold(0, (sum, item) => sum + (item.price * item.quantity));
-}
-
-// 3. Main Order Controller
 class OrderController extends GetxController {
-  final List<String> timeFilters = ["Today", "This Week", "This Month", "All"];
+  final OrderRepository _orderRepo = OrderRepository();
+  StreamSubscription? _orderSubscription;
+
+  List<OrderModel> allOrders = [];
+  List<OrderModel> filteredOrders = [];
+  bool isLoading = false;
+
+  // Filter tabs
+  final List<String> timeFilters = [
+    "All Orders",
+    "Pending",
+    "Accepted",
+    "Processing",
+    "Delivered",
+    "Cancelled",
+  ];
   int selectedTimeIndex = 0;
 
-  // UI er sathe match kore status list
   final List<String> orderStatuses = [
-    "Cooking",
-    "Ready",
-    "Delivered",
-    "Cancel",
-  ];
-  String tempSelectedStatus = "Cooking";
-
-  List<OrderModel> orders = [
-    OrderModel(
-      orderId: "#1001",
-      deliveryLocation: "Mirpur, Dhaka",
-      status: "Cooking",
-      items: [
-        OrderItem(
-          name: "Veggi Burger",
-          price: 10.0,
-          quantity: 4,
-          image: "assets/image/burger.png",
-        ),
-        OrderItem(
-          name: "Cheese Pizza",
-          price: 25.0,
-          quantity: 1,
-          image: "assets/image/burger.png",
-        ),
-      ],
-    ),
-    OrderModel(
-      orderId: "#1002",
-      deliveryLocation: "Uttara, Dhaka",
-      status: "Ready",
-      items: [
-        OrderItem(
-          name: "Chicken Burger",
-          price: 15.0,
-          quantity: 2,
-          image: "assets/image/burger.png",
-        ),
-      ],
-    ),
+    "pending",
+    "accepted",
+    "processing",
+    "delivered",
+    "cancelled",
   ];
 
+  String tempSelectedStatus = "";
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchLiveOrders();
+  }
+
+  // Live orders stream
+  void fetchLiveOrders() {
+    isLoading = true;
+    update();
+
+    _orderSubscription = _orderRepo.getOrdersStream().listen((ordersList) {
+      allOrders = ordersList;
+      _applyFilter();
+      isLoading = false;
+      update();
+    });
+  }
+
+  // Change filter tab
   void setTimeFilter(int index) {
     selectedTimeIndex = index;
+    _applyFilter();
     update();
   }
 
+  // Apply selected filter
+  void _applyFilter() {
+    if (selectedTimeIndex == 0) {
+      filteredOrders = allOrders;
+    } else {
+      String filterStatus = timeFilters[selectedTimeIndex].toLowerCase();
+      filteredOrders = allOrders
+          .where((order) => order.status.toLowerCase() == filterStatus)
+          .toList();
+    }
+  }
+
+  // Set status before update
   void setTempStatus(String status) {
     tempSelectedStatus = status;
     update();
   }
 
-  void updateOrderStatus(int orderIndex) {
-    orders[orderIndex].status = tempSelectedStatus;
-    update();
-    Get.back();
-    Get.snackbar(
-      "Success",
-      "Order ${orders[orderIndex].orderId} status updated to $tempSelectedStatus",
-      snackPosition: SnackPosition.BOTTOM,
-    );
+  // Update order status
+  Future<void> updateOrderStatus(int index) async {
+    if (filteredOrders.isEmpty || tempSelectedStatus.isEmpty) return;
+
+    String targetOrderId = filteredOrders[index].orderId;
+
+    try {
+      Get.back();
+      isLoading = true;
+      update();
+
+      await _orderRepo.updateOrderStatusInFirebase(
+        targetOrderId,
+        tempSelectedStatus,
+      );
+
+      Get.snackbar("Success", "Order status changed to '$tempSelectedStatus'.");
+    } catch (e) {
+      Get.snackbar("Error", "Failed to update status: $e");
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
+  @override
+  void onClose() {
+    _orderSubscription?.cancel();
+    super.onClose();
   }
 }

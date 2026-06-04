@@ -3,9 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zesty_go_resturant/domain/controller/app_auth_controller.dart';
+import 'package:zesty_go_resturant/domain/controller/dashboard_controller.dart';
 import 'package:zesty_go_resturant/domain/controller/order_controller.dart';
 import 'package:zesty_go_resturant/domain/controller/profile_controller.dart';
+import 'package:zesty_go_resturant/domain/repository/app_auth_repository.dart';
 import 'package:zesty_go_resturant/domain/repository/app_menu_repository.dart';
+import 'package:zesty_go_resturant/domain/repository/dashboard_repository.dart';
+import 'package:zesty_go_resturant/domain/repository/order_repository.dart';
 import 'core/app_localizetion_service.dart';
 import 'data/services/dio/dio_client.dart';
 import 'data/services/dio/logging_interceptor.dart';
@@ -28,7 +33,6 @@ Future<void> init() async {
   Get.lazyPut(() => Dio());
   Get.lazyPut(() => LoggingInterceptor());
 
-
   Get.lazyPut(
     () => DioClient(
       baseUrl ?? "",
@@ -41,9 +45,14 @@ Future<void> init() async {
   Get.lazyPut(() => LocalStorageServices(sharedPreferences: Get.find()));
 
   Get.lazyPut(() => MenuRepository());
+  Get.lazyPut(() => AuthRepository());
+  Get.lazyPut(() => OrderRepository());
+  Get.lazyPut(() => DashboardRepository());
 
   Get.lazyPut(() => BottomNavbarController());
   Get.lazyPut(() => MyMenuController(menuRepo: Get.find()));
   Get.lazyPut(() => OrderController());
   Get.lazyPut(() => ProfileController());
+  Get.lazyPut(() => AuthController());
+  Get.lazyPut(() => DashboardController(repo: Get.find()));
 }

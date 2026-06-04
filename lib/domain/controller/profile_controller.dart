@@ -1,27 +1,65 @@
-import 'dart:io';
+import 'dart:async';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import '../repository/app_profile_repo.dart';
+import '../ui_models/profile_model.dart';
 
 class ProfileController extends GetxController {
-  var name = "ZestyGo".obs;
-  var orderCount = 15.obs;
+  final ProfileRepository _profileRepo = ProfileRepository();
+  StreamSubscription? _profileSubscription;
 
-  // Image handling
-  File? pickedImage;
-  final ImagePicker _picker = ImagePicker();
+  ProfileModel? profile;
+  bool isLoading = false;
 
-  Future<void> pickImage(ImageSource source) async {
-    final XFile? image = await _picker.pickImage(source: source);
-    if (image != null) {
-      pickedImage = File(image.path);
-      update(); // UI update korbe
-      Get.back(); // Bottom sheet bondho korbe
+  @override
+  void onInit() {
+    super.onInit();
+    fetchProfileData();
+  }
+
+  void fetchProfileData() {
+    _profileSubscription?.cancel();
+
+    _profileSubscription = _profileRepo.getProfileStream().listen((data) {
+      profile = data;
+      update();
+    });
+  }
+
+  Future<void> saveProfile({
+    required String newName,
+    required String newPhone,
+    required String newEmail,
+    required String newLocation,
+    required String newImageUrl,
+  }) async {
+    if (isLoading) return;
+
+    try {
+      isLoading = true;
+      update();
+
+      await _profileRepo.updateProfile(
+        name: newName,
+        phone: newPhone,
+        email: newEmail,
+        location: newLocation,
+        imageUrl: newImageUrl,
+      );
+
+      Get.back();
+      Get.snackbar("Success", "Profile updated successfully.");
+    } catch (e) {
+      Get.snackbar("Error", "Failed to update profile: $e");
+    } finally {
+      isLoading = false;
+      update();
     }
   }
 
-  void saveProfile() {
-    // Save logic here
-    Get.back();
-    Get.snackbar("Success", "Profile updated successfully");
+  @override
+  void onClose() {
+    _profileSubscription?.cancel();
+    _profileSubscription = null;
+    super.onClose();
   }
 }
