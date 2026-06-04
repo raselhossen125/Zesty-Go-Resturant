@@ -58,7 +58,6 @@ class MyMenuController extends GetxController {
         final snapshot = response.response as QuerySnapshot;
         categoriesList.assignAll(snapshot.docs);
       } else {
-        // Permission Denied hole ekhane error asbe
         Get.snackbar("Fetch Error", response.error.toString());
       }
     } catch (e) {
@@ -71,21 +70,31 @@ class MyMenuController extends GetxController {
 
   // --- 4. Add Category ---
   Future<void> createCategory(String name, String imageUrl) async {
+    if (name.trim().isEmpty) {
+      Get.snackbar("Warning", "Please enter menu name");
+      return;
+    }
+
     isLoading.value = true;
     update();
 
     final categoryData = {
-      'categoryName': name,
-      'image': {'url': imageUrl, 'type': 'url'},
+      'categoryName': name.trim(),
+      'image': {
+        'url': imageUrl.trim().isEmpty
+            ? "https://placeholder.com/image.png"
+            : imageUrl,
+        'type': 'url',
+      },
       'createdAt': FieldValue.serverTimestamp(),
     };
 
     ApiResponse response = await menuRepo.addCategory(categoryData);
     if (response.response != null) {
       await fetchCategories();
-      clearPickedImage(); // Reset image after success
+      clearPickedImage();
       Get.back();
-      Get.snackbar("Success", "Category created!");
+      Get.snackbar("Success", "Category created successfully!");
     } else {
       Get.snackbar("Error", response.error.toString());
     }
@@ -99,10 +108,20 @@ class MyMenuController extends GetxController {
     String newName,
     String newImageUrl,
   ) async {
+    if (newName.trim().isEmpty) {
+      Get.snackbar("Warning", "Name cannot be empty");
+      return;
+    }
+
     isLoading.value = true;
     update();
 
-    final categoryData = {'categoryName': newName, 'image.url': newImageUrl};
+    final categoryData = {
+      'categoryName': newName.trim(),
+      'image.url': newImageUrl.trim().isEmpty
+          ? "https://placeholder.com/image.png"
+          : newImageUrl,
+    };
 
     ApiResponse response = await menuRepo.updateCategory(
       categoryId,
@@ -110,6 +129,7 @@ class MyMenuController extends GetxController {
     );
     if (response.response != null) {
       await fetchCategories();
+      clearPickedImage();
       Get.back();
       Get.snackbar("Success", "Category updated!");
     } else {
@@ -121,13 +141,18 @@ class MyMenuController extends GetxController {
 
   // --- 6. Delete Category ---
   Future<void> removeCategory(String categoryId) async {
+    isLoading.value = true;
+    update();
+
     ApiResponse response = await menuRepo.deleteCategory(categoryId);
     if (response.response != null) {
       await fetchCategories();
-      Get.snackbar("Deleted", "Category removed");
+      Get.back(); // Close confirmation dialog
+      Get.snackbar("Deleted", "Category removed successfully");
     } else {
       Get.snackbar("Error", response.error.toString());
     }
+    isLoading.value = false;
     update();
   }
 }

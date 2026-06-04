@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../domain/controller/menu_controller.dart'; // Apnar controller path
+import '../../../../domain/controller/menu_controller.dart';
 import '../../../common_widget/custom_text_field.dart';
 import '../../../const/app_const_theme.dart';
 import '../../../const/styles.dart';
 
-void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
+void showImagePickerBottomSheet(
+  BuildContext context,
+  String categoryId,
+  String currentTitle,
+) {
   final MyMenuController controller = Get.find<MyMenuController>();
   final TextEditingController nameController = TextEditingController(
     text: currentTitle,
@@ -14,7 +18,7 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
 
   Get.bottomSheet(
     GetBuilder<MyMenuController>(
-      builder: (controller) {
+      builder: (menuController) {
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: const BoxDecoration(
@@ -24,7 +28,6 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Top Indicator
               Container(
                 width: 40,
                 height: 4,
@@ -53,9 +56,9 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: controller.pickedImage != null
+                        child: menuController.pickedImage != null
                             ? Image.file(
-                                controller.pickedImage!,
+                                menuController.pickedImage!,
                                 fit: BoxFit.cover,
                               )
                             : Icon(
@@ -65,12 +68,12 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
                               ),
                       ),
                     ),
-                    if (controller.pickedImage != null)
+                    if (menuController.pickedImage != null)
                       Positioned(
                         top: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () => controller.clearPickedImage(),
+                          onTap: () => menuController.clearPickedImage(),
                           child: const CircleAvatar(
                             radius: 14,
                             backgroundColor: Colors.red,
@@ -87,7 +90,7 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
               ),
               const SizedBox(height: 25),
 
-              // Source Options
+              // Source Options Rows Block
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -96,14 +99,14 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
                     icon: Icons.camera_alt_rounded,
                     label: "Camera",
                     color: Colors.blue,
-                    onTap: () => controller.pickImage(ImageSource.camera),
+                    onTap: () => menuController.pickImage(ImageSource.camera),
                   ),
                   _buildOptionCard(
                     context,
                     icon: Icons.photo_library_rounded,
                     label: "Gallery",
                     color: Colors.purple,
-                    onTap: () => controller.pickImage(ImageSource.gallery),
+                    onTap: () => menuController.pickImage(ImageSource.gallery),
                   ),
                 ],
               ),
@@ -116,15 +119,23 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
               ),
               const SizedBox(height: 30),
 
-              // Save Button
+              // Action Buttons Config
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Ekhane save logic hobe (Database update)
-                    Get.back();
-                    controller.clearPickedImage();
-                  },
+                  onPressed: menuController.isLoading.value
+                      ? null
+                      : () {
+                          String finalMockUrl =
+                              menuController.pickedImage != null
+                              ? "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+                              : "";
+                          menuController.editCategory(
+                            categoryId,
+                            nameController.text,
+                            finalMockUrl,
+                          );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppConstColor.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -132,13 +143,22 @@ void showImagePickerBottomSheet(BuildContext context, String currentTitle) {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    "Save Changes",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: menuController.isLoading.value
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Save Changes",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 10),

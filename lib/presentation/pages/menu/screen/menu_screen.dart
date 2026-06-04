@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore import
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../domain/controller/menu_controller.dart';
 import '../../../common_widget/custom_app_bar.dart';
 import '../../../const/app_const_dimensions.dart';
@@ -8,14 +8,13 @@ import '../../../const/app_const_theme.dart';
 import '../../../const/styles.dart';
 import '../../../routes/app_routes.dart';
 import '../widget/menu_delete_dialog.dart';
-import '../widget/menu_edit_dialog.dart';
+import '../widget/menu_edit_dialog.dart'; // Sheet location clear path dynamically matched
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Controller-e repository inject kora thakle seta use hobe
     final MyMenuController controller = Get.find<MyMenuController>();
 
     return Scaffold(
@@ -35,14 +34,15 @@ class MenuScreen extends StatelessWidget {
       ),
 
       body: GetBuilder<MyMenuController>(
-        builder: (controller) {
+        builder: (menuController) {
           // Loading state check
-          if (controller.isLoading.value && controller.categoriesList.isEmpty) {
+          if (menuController.isLoading.value &&
+              menuController.categoriesList.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
           // Khali list check
-          if (controller.categoriesList.isEmpty) {
+          if (menuController.categoriesList.isEmpty) {
             return const Center(child: Text("No Categories Found"));
           }
 
@@ -51,11 +51,11 @@ class MenuScreen extends StatelessWidget {
               horizontal: Dimensions.PADDING_SIZE_DEFAULT,
               vertical: Dimensions.PADDING_SIZE_SMALL,
             ),
-            itemCount: controller.categoriesList.length,
+            itemCount: menuController.categoriesList.length,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
-              // Firestore DocumentSnapshot theke data neya
-              DocumentSnapshot categoryDoc = controller.categoriesList[index];
+              DocumentSnapshot categoryDoc =
+                  menuController.categoriesList[index];
               Map<String, dynamic> data =
                   categoryDoc.data() as Map<String, dynamic>;
 
@@ -66,9 +66,9 @@ class MenuScreen extends StatelessWidget {
                 context,
                 categoryName,
                 categoryImageUrl,
-                categoryDoc.id, // Document ID for edit/delete
+                categoryDoc.id,
                 index,
-                controller,
+                menuController,
               );
             },
           );
@@ -106,7 +106,7 @@ class MenuScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Image Section - Network Image bebohar kora hoyeche
+            // Image Section
             Container(
               width: 100,
               height: 100,
@@ -169,7 +169,7 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
 
-            // Action Button
+            // Action Button - PopupMenu System Fixed
             PopupMenuButton<String>(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -180,13 +180,11 @@ class MenuScreen extends StatelessWidget {
                   controller.setCategoryIndex(index);
                   Get.toNamed(RouteName.VIEW_DETAILS);
                 } else if (value == 'edit') {
-                  // Pass data for editing
-                  // showImagePickerBottomSheet(context, title, categoryId);
+                  // Comment output sorano holo ebong dynamic validation order sequence path map kora holo
+                  showImagePickerBottomSheet(context, categoryId, title);
                 } else if (value == 'delete') {
-                  // UI theke direct repository delete call
-                  // showMenuDeleteDialog(context, title, () {
-                  //   controller.removeCategory(categoryId);
-                  // });
+                  // Controller core execution model direct bind dynamic handler injection
+                  showMenuDeleteDialog(context, categoryId, title);
                 }
               },
               itemBuilder: (context) => [
